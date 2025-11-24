@@ -1,0 +1,37 @@
+return {}
+-- return {
+--   {
+--     'kevinhwang91/rnvimr',
+--     cmd = { 'RnvimrToggle', 'RnvimrResize', 'RnvimrToggleMode' },
+--     keys = {
+--       { '<leader>rr', ':RnvimrToggle<CR>', desc = 'Toggle Ranger File Explorer' },
+--     },
+--     config = function()
+--       vim.g.rnvimr_erable_ex = 0
+--       vim.g.rnvimr_enable_picker = 0
+--       vim.g.rnvimr_drrw_border = 1
+--       vim.g.rnvimr_hide_gitignore = 1
+--       vim.g.rnvimr_enable_bw = 1
+--     end,
+--   },
+-- }
+-- return {
+--   'kelly-lin/ranger.nvim',
+--   config = function()
+--     require('ranger-nvim').setup { replace_netrw = false }
+--     ui = {
+--       border = 'single',
+--       height = 1,
+--       width = 1,
+--       x = 0.5,
+--       y = 0.5,
+--     }
+--     enable_cmds = true
+--     vim.api.nvim_set_keymap('n', '<leader>rr', '', {
+--       noremap = true,
+--       callback = function()
+--         require('ranger-nvim').open(true)
+--       end,
+--     })
+--   end,
+-- }
