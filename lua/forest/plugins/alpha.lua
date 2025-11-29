@@ -11,10 +11,10 @@ return {
       '',
       '',
       '',
-      '  ╭─────────────────────────────╮',
-      '  │         KEEP SIMPLE         │',
-      '  │    create. focus. refine.   │',
-      '  ╰─────────────────────────────╯',
+      '+-----------------------------+',
+      '|         KEEP SIMPLE         |',
+      '|    create. focus. refine.   |',
+      '+-----------------------------+',
       '',
     }
 
@@ -23,8 +23,7 @@ return {
       dashboard.button('f', '  Find file', ':Telescope find_files<CR>'),
       dashboard.button('r', '  Recent files', ':Telescope oldfiles<CR>'),
       dashboard.button('p', '  Projects', ':Telescope projects<CR>'),
-      dashboard.button('d', 'D  Daily', ':Telescope projects<CR>'),
-      dashboard.button('c', '  Config', ':cd ~/.config/nvim | Ex<CR>'),
+      dashboard.button('c', '  Config', ':edit ~/.config/nvim<CR>'),
       dashboard.button('q', '  Quit', ':qa<CR>'),
     }
 
