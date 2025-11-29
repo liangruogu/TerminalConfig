@@ -11,13 +11,32 @@ return {
   },
   lazy = false,
   keys = {
-    { '<leader>e', ':Neotree toggle<CR>', desc = 'NeoTree reveal', silent = true },
+    {
+      '<leader>e',
+      function()
+        require('neo-tree.command').execute {
+          toggle = true,
+          dir = vim.loop.cwd(),
+        }
+      end,
+      desc = 'NeoTree reveal',
+      silent = true,
+    },
   },
   opts = {
     filesystem = {
+      bind_to_cwd = false,
       window = {
         mappings = {
           ['\\'] = 'close_window',
+          ['l'] = 'open',
+          ['q'] = 'close_window',
+          ['<C-h>'] = function(state)
+            vim.cmd 'wincmd h'
+          end,
+          ['<C-l>'] = function(state)
+            vim.cmd 'wincmd l'
+          end,
         },
       },
     },
