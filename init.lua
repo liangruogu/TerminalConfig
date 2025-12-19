@@ -88,6 +88,7 @@ P.S. You can delete this when you're done too. It's your config now! :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ','
 vim.g.python3_host_prog = vim.fn.expand '~/virtualenvs/neovim/bin/python3'
+vim.o.relativenumber = true
 
 -- Molten setup
 vim.g.molten_auto_open_output = false
@@ -567,7 +568,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
-      vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
+      vim.keymap.set('n', '<leader>st', builtin.builtin, { desc = '[S]earch [T]elescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
@@ -576,17 +577,16 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       vim.keymap.set('n', '<leader>sp', ':Telescope projects<CR>', { desc = '[S]earch [P]rojects' })
-      vim.keymap.set('n', '<leader>ls', function()
-        builtin.lsp_document_symbols {
-          symbols = { 'Function', 'Method' },
-        }
-      end, { desc = 'List symbols in current file' })
       vim.keymap.set('n', '<leader>fs', function()
-        builtin.lsp_dynamic_workspace_symbols {
-          symbols = { 'Functin', 'Method' },
+        builtin.lsp_document_symbols {
+          symbols = { 'Function', 'Method', 'Variable' },
         }
-      end, { desc = 'Find symbols in current project' })
-      vim.keymap.set('n', '<leader>ct', ':Telescope colorscheme<CR>', { desc = 'Change Theme' })
+      end, { desc = '[F]ind [S]ymbols in current file' })
+      vim.keymap.set('n', '<leader>ss', function()
+        builtin.lsp_dynamic_workspace_symbols {
+          symbols = { 'Function', 'Method', 'Variable' },
+        }
+      end, { desc = '[S]earch [S]mbols in current project' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
