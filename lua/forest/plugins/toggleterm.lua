@@ -5,7 +5,8 @@ return {
     require('toggleterm').setup {
       size = 15,
       open_mapping = [[<c-`>]], -- 你原来的
-      direction = 'horizontal',
+      --direction = 'horizontal',
+      direction = 'float',
       shade_terminals = true,
       start_in_insert = true,
       persist_size = true,
