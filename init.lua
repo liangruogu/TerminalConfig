@@ -1,5 +1,7 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ','
+vim.o.wildmode = 'list'
+vim.o.wildmenu = true
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
@@ -14,7 +16,7 @@ vim.o.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
 
-vim.o.winborder = 'single'
+-- vim.o.winborder = 'single'
 
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
@@ -79,7 +81,39 @@ vim.o.confirm = true
 --  See `:help hlsearch`
 vim.keymap.set('n', '<C-n>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<C-s>', '<cmd>w<CR>')
+vim.keymap.set('n', '<C-y>', '<cmd>Compile<CR>')
+vim.keymap.set('n', '<C-f>', '<cmd>Telescope zoxide list<CR>')
 vim.keymap.set('i', 'jk', '<Esc>')
+
+local function toggle_compilation_window()
+  local target_name = '*compilation*'
+
+  local wins = vim.api.nvim_tabpage_list_wins(0)
+  for _, win in ipairs(wins) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    local name = vim.api.nvim_buf_get_name(buf)
+    if name:match(target_name) then
+      vim.api.nvim_win_close(win, false)
+      return -- 找到了并关闭，直接结束函数
+    end
+  end
+
+  local bufs = vim.api.nvim_list_bufs()
+  for _, buf in ipairs(bufs) do
+    -- 确保 buffer 是有效的并且名字匹配
+    if vim.api.nvim_buf_is_valid(buf) then
+      local name = vim.api.nvim_buf_get_name(buf)
+      if name:match(target_name) then
+        -- 找到了 buffer，在下方水平分屏打开
+        vim.cmd('botright sbuf ' .. buf)
+        return
+      end
+    end
+  end
+
+  print('未在 :buffers 中找到 ' .. target_name)
+end
+vim.keymap.set('n', '<C-`>', toggle_compilation_window, { desc = 'Toggle Compilation Window' })
 
 -- delete completely
 vim.keymap.set('n', '<localleader>dd', '"_dd')
@@ -178,26 +212,31 @@ vim.o.expandtab = true
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+vim.keymap.set('n', '<C-h>', '<C-w>h', { desc = 'Move focus to the left window' })
+vim.keymap.set('n', '<C-l>', '<C-w>l', { desc = 'Move focus to the right window' })
+vim.keymap.set('n', '<C-j>', '<C-w>j', { desc = 'Move focus to the lower window' })
+vim.keymap.set('n', '<C-k>', '<C-w>k', { desc = 'Move focus to the upper window' })
 
 vim.keymap.set('n', '<C-S-h>', '<C-w>H', { desc = 'Move window to the left' })
 vim.keymap.set('n', '<C-S-l>', '<C-w>L', { desc = 'Move window to the right' })
 vim.keymap.set('n', '<C-S-j>', '<C-w>J', { desc = 'Move window to the lower' })
 vim.keymap.set('n', '<C-S-k>', '<C-w>K', { desc = 'Move window to the upper' })
 
-local function smart_edit()
-  -- 提示用户输入路径，预填默认值
-  local path = vim.fn.input('Edit path: ', '/home/chul/', 'dir')
-  if path ~= '' then
-    local expanded_path = vim.fn.expand(path)
-    vim.api.nvim_set_current_dir(expanded_path)
-    vim.cmd('edit ' .. expanded_path)
-  end
-end
-vim.keymap.set('n', '<C-e>', smart_edit, { noremap = true, silent = true })
+-- local function smart_edit()
+-- -- 提示用户输入路径，预填默认值
+-- local path = vim.fn.input('Edit path: ', '/home/chul/', 'dir')
+-- if path ~= '' then
+-- local expanded_path = vim.fn.expand(path)
+-- vim.api.nvim_set_current_dir(expanded_path)
+-- vim.cmd('edit ' .. expanded_path)
+-- end
+-- end
+-- vim.keymap.set('n', '<C-e>', smart_edit, { noremap = true, silent = true })
+vim.keymap.set('n', '<C-S-e>', ':Dired /home/chul/', { noremap = true })
+vim.keymap.set('n', '<C-e>', function()
+  local current_file_dir = vim.fn.expand '%:p:h'
+  vim.cmd('Dired ' .. current_file_dir)
+end, { noremap = true, desc = "Open Dired in current file's directory" })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -224,12 +263,14 @@ vim.api.nvim_create_autocmd('BufReadPost', {
 })
 
 vim.api.nvim_create_user_command('EditConf', function()
-  vim.cmd 'cd ~/.config/nvim/ | e init.lua'
+  vim.cmd 'cd ~/.config/nvim/ | edit init.lua'
 end, {})
 
 vim.api.nvim_create_user_command('Sway', function()
   vim.fn.jobstart 'swayimg --gallery'
 end, {})
+
+vim.api.nvim_create_user_command('ListBuffers', 'buffers', {})
 
 -- [[ Install `lazy.nvim` plugin manager ]] See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -274,6 +315,7 @@ require('lazy').setup({
     event = 'VimEnter',
     dependencies = {
       'nvim-lua/plenary.nvim',
+      { 'jvgrootveld/telescope-zoxide' },
       {
         'nvim-telescope/telescope-fzf-native.nvim',
         build = 'make',
@@ -304,12 +346,26 @@ require('lazy').setup({
             results = { '─', '│', '─', '│', '┌', '┐', '┘', '└' },
             preview = { '─', '│', '─', '│', '┌', '┐', '┘', '└' },
           },
-          file_ignore_patterns = { 'node_modules', '%.pyc', '%.png', '%.jpg', '%.mp4', '%.git/', '%.pth', '%.safetensors', 'LICENSE' },
+          file_ignore_patterns = { 'node_modules', '%.pyc', '%.png', '%.jpg', '%.mp4', '%.git/', '%.pth', '%.safetensors', 'LICENSE', 'target', '%.lock' },
+          layout_config = {
+            prompt_position = 'top',
+          },
+          sorting_strategy = 'ascending',
         },
         -- pickers = {}
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
+          },
+          zoxide = {
+            prompt_title = '[ Zoixde Jump ]',
+            mappings = {
+              default = {
+                after_action = function(selection)
+                  print('Directory switched to: ' .. selection.path)
+                end,
+              },
+            },
           },
         },
       }
@@ -317,6 +373,7 @@ require('lazy').setup({
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require('telescope').load_extension, 'zoxide')
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
@@ -673,10 +730,9 @@ require('lazy').setup({
       }
 
       -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       -- vim.cmd.colorscheme 'tokyonight-night'
-      vim.cmd.colorscheme 'gruvbox'
+      vim.cmd.colorscheme 'catppuccin'
     end,
   },
 

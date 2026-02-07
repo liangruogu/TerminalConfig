@@ -14,6 +14,7 @@ return {
   config = function()
     ---@type CompileModeOpts
     vim.g.compile_mode = {
+      default_command = 'cargo run --bin ',
       -- if you use something like `nvim-cmp` or `blink.cmp` for completion,
       -- set this to fix tab completion in command mode:
       -- input_word_completion = true,
