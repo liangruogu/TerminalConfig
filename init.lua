@@ -270,7 +270,7 @@ vim.api.nvim_create_user_command('Sway', function()
   vim.fn.jobstart 'swayimg --gallery'
 end, {})
 
-vim.api.nvim_create_user_command('ListBuffers', 'buffers', {})
+vim.api.nvim_create_user_command('Bfs', 'buffers', {})
 
 -- [[ Install `lazy.nvim` plugin manager ]] See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
