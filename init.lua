@@ -250,14 +250,14 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 vim.api.nvim_create_autocmd('BufReadPost', {
-  pattern = { '*.png', '*.jpg', '*.jpeg', '*.ico', '*.webp', '*.gif' },
+  pattern = { '*.png', '*.jpg', '*.jpeg', '*.ico', '*.webp', '*.gif', '*.pdf' },
   callback = function()
     local file = vim.fn.expand '%:p'
     local opener = 'xdg-open'
     vim.fn.jobstart({ opener, file }, { detach = true })
     vim.api.nvim_buf_delete(0, { force = true })
     pcall(function()
-      vim.cmd 'NvimTreeFocus'
+      vim.cmd 'Dired'
     end)
   end,
 })
@@ -346,7 +346,21 @@ require('lazy').setup({
             results = { '─', '│', '─', '│', '┌', '┐', '┘', '└' },
             preview = { '─', '│', '─', '│', '┌', '┐', '┘', '└' },
           },
-          file_ignore_patterns = { 'node_modules', '%.pyc', '%.png', '%.jpg', '%.mp4', '%.git/', '%.pth', '%.safetensors', 'LICENSE', 'target', '%.lock' },
+          file_ignore_patterns = {
+            'node_modules',
+            '%.pyc',
+            '%.png',
+            '%.jpg',
+            '%.mp4',
+            '%.git/',
+            '%.pth',
+            '%.safetensors',
+            'LICENSE',
+            'target',
+            '%.lock',
+            '%.npz',
+            '%.pkl',
+          },
           layout_config = {
             prompt_position = 'top',
           },

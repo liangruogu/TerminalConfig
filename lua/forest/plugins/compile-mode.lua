@@ -1,30 +1,26 @@
 return {
   'ej-shafran/compile-mode.nvim',
   version = '^5.0.0',
-  -- you can just use the latest version:
-  -- branch = "latest",
-  -- or the most up-to-date updates:
-  -- branch = "nightly",
   dependencies = {
     'nvim-lua/plenary.nvim',
-    -- if you want to enable coloring of ANSI escape codes in
-    -- compilation output, add:
-    -- { "m00qek/baleia.nvim", tag = "v1.3.0" },
   },
   config = function()
     ---@type CompileModeOpts
     vim.g.compile_mode = {
-      default_command = 'cargo run --bin ',
-      -- if you use something like `nvim-cmp` or `blink.cmp` for completion,
-      -- set this to fix tab completion in command mode:
-      -- input_word_completion = true,
+      -- 将 default_command 设置为一个函数
+      default_command = function()
+        local ext = vim.fn.expand '%:e'
+        local filename = vim.fn.expand '%:t'
+        local filename_no_ext = vim.fn.expand '%:t:r'
 
-      -- to add ANSI escape code support, add:
-      -- baleia_setup = true,
-
-      -- to make `:Compile` replace special characters (e.g. `%`) in
-      -- the command (and behave more like `:!`), add:
-      -- bang_expansion = true,
+        if ext == 'py' then
+          return 'uv run ' .. filename
+        elseif ext == 'rs' then
+          return 'cargo run --bin ' .. filename_no_ext
+        else
+          return 'make'
+        end
+      end,
     }
   end,
 }
