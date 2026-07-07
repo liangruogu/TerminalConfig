@@ -6,6 +6,7 @@ return {
     'MunifTanjim/nui.nvim',
   },
   opts = {
+    lang = 'python',
     cn = {
       enabled = true, ---@type boolean
       translator = true, ---@type boolean

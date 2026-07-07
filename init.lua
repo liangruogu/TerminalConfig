@@ -81,7 +81,7 @@ vim.o.confirm = true
 --  See `:help hlsearch`
 vim.keymap.set('n', '<C-n>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<C-s>', '<cmd>w<CR>')
-vim.keymap.set('n', '<C-y>', '<cmd>Compile<CR>')
+vim.keymap.set('n', '<C-y>', '<cmd>Cm<CR>')
 vim.keymap.set('n', '<C-f>', '<cmd>Telescope zoxide list<CR>')
 vim.keymap.set('i', 'jk', '<Esc>')
 
@@ -271,6 +271,30 @@ vim.api.nvim_create_user_command('Sway', function()
 end, {})
 
 vim.api.nvim_create_user_command('Bfs', 'buffers', {})
+
+vim.api.nvim_create_user_command('Cm', function()
+  local ext = vim.fn.expand '%:e'
+  local filename = vim.fn.expand '%:t'
+  local filename_no_ext = vim.fn.expand '%:t:r'
+
+  local cmd
+  if ext == 'py' then
+    cmd = 'uv run ' .. filename
+  elseif ext == 'rs' then
+    cmd = 'cargo run --bin ' .. filename_no_ext
+  elseif ext == 'cpp' or ext == 'c' or ext == 'cc' then
+    cmd = 'g++ ' .. filename .. ' -o ' .. filename_no_ext .. ' && ./' .. filename_no_ext
+  else
+    cmd = ''
+  end
+
+  -- 关键：调用 :Compile 并传入计算好的命令
+  if cmd ~= '' then
+    vim.cmd('Compile ' .. cmd)
+  else
+    print('No compile command for .' .. ext .. ' files')
+  end
+end, {})
 
 -- [[ Install `lazy.nvim` plugin manager ]] See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -573,7 +597,21 @@ require('lazy').setup({
             },
           },
         },
-        rust_analyzer = {},
+        rust_analyzer = {
+          lru = {
+            capacity = 32,
+          },
+          checkOnSave = {
+            allTargets = false,
+          },
+          files = {
+            excludeDirs = {
+              '.git',
+              'target',
+              'node_modules',
+            },
+          },
+        },
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },

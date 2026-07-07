@@ -7,9 +7,7 @@
 -- kickstart.nvim and not kitchen-sink.nvim ;)
 
 return {
-  -- NOTE: Yes, you can install new plugins here!
   'mfussenegger/nvim-dap',
-  -- NOTE: And you can specify dependencies as well
   dependencies = {
     -- Creates a beautiful debugger UI
     'rcarriga/nvim-dap-ui',
@@ -96,6 +94,7 @@ return {
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
         'delve',
+        'debugpy',
       },
     }
 
@@ -146,5 +145,27 @@ return {
         detached = vim.fn.has 'win32' == 0,
       },
     }
+
+    -- 针对uv配置的python环境
+    local function get_python_path()
+      local cwd = vim.fn.getcwd()
+      local venv_path = cwd .. '/.venv'
+
+      -- 判断当前系统是 Windows 还是 Unix
+      local is_windows = vim.fn.has 'win32' == 1
+      local python_bin = is_windows and '/Scripts/python.exe' or '/bin/python'
+      local full_path = venv_path .. python_bin
+
+      -- 如果当前项目目录下有 uv 创建的 .venv 且可执行，就用它
+      if vim.fn.executable(full_path) == 1 then
+        return full_path
+      end
+
+      -- 找不到的话，就让 nvim-dap-python 回退去找系统全局的或 Mason 里的 python
+      return 'python'
+    end
+
+    -- 初始化 python 调试器
+    require('dap-python').setup(get_python_path())
   end,
 }
