@@ -1,30 +1,25 @@
--- return {
---   'X3eRo0/dired.nvim',
---   dependencies = { 'nvim-tree/nvim-web-devicons' }, -- 可选，用于显示图标
---   config = function()
---     require('dired').setup {
---       path_separator = '/',
---       show_banner = false, -- 类似 Emacs dired，隐藏顶部的提示信息
---     }
---   end,
--- }
---
---
 return {
-  'X3eRo0/dired.nvim',
+  'kawre/leetcode.nvim',
+  build = ':TSUpdate html', -- 如果装了 nvim-treesitter，自动更新高亮
   dependencies = {
-    'nvim-tree/nvim-web-devicons',
+    'nvim-lua/plenary.nvim',
     'MunifTanjim/nui.nvim',
   },
-  config = function()
-    -- 正常初始化插件
-    require('dired').setup {
-      path_separator = '/',
-      show_banner = false,
-    }
+  -- opts 里只保留纯粹的插件选项
+  opts = {
+    lang = 'python',
+    cn = {
+      enabled = true,
+      translator = true,
+      translate_problems = true,
+    },
+  },
+  config = function(_, opts)
+    -- 1. 首先让插件以你上面写的 opts 参数正常初始化
+    require('leetcode').setup(opts)
 
-    -- 创建自定义用户指令 :Lc <文件名>
-    vim.api.nvim_create_user_command('Lc', function(opts)
+    -- 2. 接着创建你的自定义用户指令 :Lc <文件名>
+    vim.api.nvim_create_user_command('Lc', function(cmd_opts)
       -- 1. 自动获取目标目录
       local current_dir = nil
 
@@ -39,7 +34,7 @@ return {
       end
 
       -- 2. 获取文件名参数
-      local filename = opts.args
+      local filename = cmd_opts.args
       if not filename or filename == '' then
         vim.notify('请提供文件名，例如: :Lc two_sum.cpp', vim.log.levels.WARN)
         return
@@ -82,7 +77,7 @@ return {
           '',
           'int main() {',
           '    Solution solution;',
-          '    // TODO: 构建测试用例并调用 solution.' .. func_name .. '(root);',
+          '    -- TODO: 构建测试用例并调用 solution.' .. func_name .. '(root);',
           '    return 0;',
           '}',
         }
@@ -103,7 +98,7 @@ return {
         vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
         vim.cmd 'write'
         if ext == '.cpp' then
-          vim.api.nvim_win_set_cursor(0, { 7, 4 })
+          vim.api.nvim_win_set_cursor(0, { 16, 13 }) -- 稍微修正了光标位置，让它直接精准落在函数体 TODO 的上方
         elseif ext == '.py' then
           vim.api.nvim_win_set_cursor(0, { 4, 4 })
         end
