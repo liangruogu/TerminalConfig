@@ -69,7 +69,7 @@ return {
           '',
           'class Solution {',
           'public:',
-          '    TreeNode* ' .. func_name .. '(TreeNode* root) {',
+          '    vector<vector<int>> ' .. func_name .. '(vector<int>& nums) {',
           '        // TODO: 在这里编写算法逻辑',
           '        return root;',
           '    }',
@@ -77,7 +77,7 @@ return {
           '',
           'int main() {',
           '    Solution solution;',
-          '    -- TODO: 构建测试用例并调用 solution.' .. func_name .. '(root);',
+          '    // TODO: 构建测试用例并调用 solution.' .. func_name .. '(root);',
           '    return 0;',
           '}',
         }

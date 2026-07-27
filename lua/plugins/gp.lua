@@ -14,31 +14,31 @@ return {
       },
 
       agents = {
-        -- {
-        --   name = 'deepseek-v4-pro',
-        --   provider = 'openai',
-        --   model = { model = 'deepseek-chat' },
-        --   chat = true,
-        --   command = false,
-        --   system_prompt = '你是一个精通所有编程语言的资深架构师和幽默的编程助手。',
-        -- },
         {
-          name = 'deepseek-chat',
+          name = 'deepseek-v4-pro',
           provider = 'openai',
           model = { model = 'deepseek-chat' },
           chat = true,
           command = false,
           system_prompt = '你是一个精通所有编程语言的资深架构师和幽默的编程助手。',
         },
+        {
+          name = 'deepseek-chat',
+          provider = 'deepseek',
+          model = { model = 'deepseek-chat' },
+          chat = true,
+          command = true,
+          system_prompt = '你是一个精通所有编程语言的资深架构师和幽默的编程助手。',
+        },
       },
 
       default_chat_agent = 'deepseek-chat',
-      -- default_command_agent = 'deepseek-v4-pro',
+      default_command_agent = 'deepseek-v4-pro',
     }
 
     require('gp').setup(conf)
 
     -- 快捷键：Visual 模式下绑定 <leader>wh
-    vim.keymap.set('v', '<leader>wh', ":<C-u>'<,'>GpChatNew<CR>", { silent = true })
+    vim.keymap.set('v', '<leader>gp', ":<C-u>'<,'>GpChatNew<CR>", { silent = true })
   end,
 }
